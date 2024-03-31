@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         else if(trenutniAdapter == 2){
             botanickaListAdapter.updateBiljke(biljke)
         }
-        else if(trenutniAdapter==1){
+        else if(trenutniAdapter==3){
             kuharskaListAdapter.updateBiljke(biljke)
         }
     }
