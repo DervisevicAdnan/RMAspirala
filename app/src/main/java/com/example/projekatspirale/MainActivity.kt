@@ -1,5 +1,7 @@
 package com.example.projekatspirale
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -7,9 +9,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private var modovi = listOf<String>("Medicinski mod", "Kuharski mod", "Botanički mod")
     private lateinit var spinnerAdapter : ArrayAdapter<String>
     private lateinit var resetBtn: Button
+    private lateinit var novaBiljkaBtn: Button
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var medicinskaListAdapter: MedicinskaListAdapter
@@ -27,6 +29,16 @@ class MainActivity : AppCompatActivity() {
     private var trenutniAdapter: Int = 0
 
     private var biljke = getListuBiljaka()
+
+    val startActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            spinner.setSelection(0)
+            trenutniAdapter = 1
+            resetujBiljke()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,9 +71,10 @@ class MainActivity : AppCompatActivity() {
             false
         )
 
-
-
-
+        novaBiljkaBtn = findViewById(R.id.novaBiljkaBtn)
+        novaBiljkaBtn.setOnClickListener {
+            showNovaBiljka()
+        }
     }
     fun postaviMedicinskiMod(){
         medicinskaListAdapter = MedicinskaListAdapter(listOf())
@@ -129,5 +142,9 @@ class MainActivity : AppCompatActivity() {
         else if(trenutniAdapter==3){
             kuharskaListAdapter.updateBiljke(biljke)
         }
+    }
+    private fun showNovaBiljka() {
+        val intent = Intent(this, NovaBiljkaActivity::class.java)
+        startActivityLauncher.launch(intent)
     }
 }

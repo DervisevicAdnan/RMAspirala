@@ -53,5 +53,9 @@ val biljke = listOf(
         zemljisniTipovi = listOf(Zemljiste.PJESKOVITO, Zemljiste.KRECNJACKO)
     )
 )
+var biljkeUpotrebnaLista : ArrayList<Biljka> = ArrayList(biljke)
+fun getListuBiljaka() = biljkeUpotrebnaLista
 
-fun getListuBiljaka() = biljke
+fun dodajBiljkuUListu(biljka: Biljka){
+    biljkeUpotrebnaLista.add(biljka)
+}
