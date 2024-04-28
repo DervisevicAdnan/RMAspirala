@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ListView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class NovaBiljkaActivity : AppCompatActivity() {
@@ -49,6 +50,15 @@ class NovaBiljkaActivity : AppCompatActivity() {
     val REQUEST_IMAGE_CAPTURE = 1
 
     private var kliknutoJelo : Int? = null
+
+    val slikajSlikuLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val imageBitmap = result.data?.extras?.get("data") as Bitmap
+            slikaIV.setImageBitmap(imageBitmap)
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,6 +134,7 @@ class NovaBiljkaActivity : AppCompatActivity() {
 
     private fun dodajBiljku(){
         var imaGresaka = false
+        var imaBtnGreska = false
         if(nazivET.text.toString().length < 2 || nazivET.text.toString().length > 20){
             nazivET.setError("Dužina naziva biljke mora biti između 2 i 20 karaktera")
             imaGresaka = true
@@ -137,17 +148,28 @@ class NovaBiljkaActivity : AppCompatActivity() {
             imaGresaka = true
         }
 
+        dodajBiljkuBtn.setError(null)
+
         if(medicinskaKoristLV.checkedItemCount == 0 || klimatskiTipLV.checkedItemCount == 0
             || zemljisniTipLV.checkedItemCount == 0 || profilOkusaLV.checkedItemCount == 0){
-            dodajBiljkuBtn.setError("Nije selektovan item u listama")
+            dodajBiljkuBtn.setError("Nije selektovan item u svim listama")
             imaGresaka = true
+            imaBtnGreska = true
         }
 
         if(jelaVrijednosti.size == 0){
-            dodajBiljkuBtn.setError("Nije dodano ni jedno jelo")
+            if(dodajBiljkuBtn.error != null) dodajBiljkuBtn.setError(dodajBiljkuBtn.error.toString()+"\nNije dodano ni jedno jelo")
+            else dodajBiljkuBtn.setError("Nije dodano ni jedno jelo")
             imaGresaka = true
+            imaBtnGreska = true
         }
 
+        if(!imaBtnGreska) dodajBiljkuBtn.setError(null)
+        else{
+            dodajBiljkuBtn.isFocusableInTouchMode = true
+            dodajBiljkuBtn.requestFocus()
+            dodajBiljkuBtn.isFocusableInTouchMode = false
+        }
         if(imaGresaka) return
 
         val listMedicinskeKoristi = arrayListOf<MedicinskaKorist>()
@@ -194,7 +216,7 @@ class NovaBiljkaActivity : AppCompatActivity() {
     private fun dodajJelo(){
         if (kliknutoJelo == null) {
             if(jeloET.text.toString().length < 2 || jeloET.text.toString().length > 20){
-                jeloET.setError("Dužina medicinskog upozorenja mora biti između 2 i 20 karaktera")
+                jeloET.setError("Dužina naziva jela mora biti između 2 i 20 karaktera")
                 return
             }
             for (i in 0..jelaVrijednosti.size-1){
@@ -210,7 +232,7 @@ class NovaBiljkaActivity : AppCompatActivity() {
             }
             else{
                 if(jeloET.text.toString().length < 2 || jeloET.text.toString().length > 20){
-                    jeloET.setError("Dužina medicinskog upozorenja mora biti između 2 i 20 karaktera")
+                    jeloET.setError("Dužina naziva jela mora biti između 2 i 20 karaktera")
                     return
                 }
                 for (i in 0..<jelaVrijednosti.size){
@@ -233,16 +255,17 @@ class NovaBiljkaActivity : AppCompatActivity() {
     private fun dispatchTakePictureIntent() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            slikajSlikuLauncher.launch(takePictureIntent)
+            //startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
         } catch (e: ActivityNotFoundException) {
-            // display error state to the user
+
         }
     }
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
             slikaIV.setImageBitmap(imageBitmap)
         }
-    }
+    }*/
 }
