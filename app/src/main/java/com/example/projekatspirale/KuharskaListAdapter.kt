@@ -29,8 +29,16 @@ class KuharskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Adap
         holder: KuharskaListAdapter.KuharskaViewHolder,
         position: Int
     ) {
+        holder.nazivBiljke.text = ""
+        holder.profilOkusaBiljke.text = ""
+        for(i in holder.jelaBiljke.indices){
+            holder.jelaBiljke[i].text = ""
+        }
+
         holder.nazivBiljke.text = biljke[position].naziv
-        holder.profilOkusaBiljke.text = biljke[position].profilOkusa.opis
+        if(biljke[position].profilOkusa != null) {
+            holder.profilOkusaBiljke.text = biljke[position].profilOkusa!!.opis
+        }
         for(i in biljke[position].jela.indices){
             holder.jelaBiljke[i].text = biljke[position].jela[i]
         }

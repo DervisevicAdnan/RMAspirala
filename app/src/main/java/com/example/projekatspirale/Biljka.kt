@@ -5,7 +5,7 @@ data class Biljka(
     val porodica : String,
     val medicinskoUpozorenje : String,
     val medicinskeKoristi : List<MedicinskaKorist>,
-    val profilOkusa : ProfilOkusaBiljke,
+    val profilOkusa : ProfilOkusaBiljke?,
     val jela : List<String>,
     val klimatskiTipovi : List<KlimatskiTip>,
     val zemljisniTipovi : List<Zemljiste>)

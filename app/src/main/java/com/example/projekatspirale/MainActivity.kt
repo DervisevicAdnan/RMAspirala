@@ -3,16 +3,22 @@ package com.example.projekatspirale
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var spinner : Spinner
@@ -75,6 +81,9 @@ class MainActivity : AppCompatActivity() {
         novaBiljkaBtn.setOnClickListener {
             showNovaBiljka()
         }
+
+        //getUpcoming()
+        //TrefleDAO.searchPoLatNazivu("Salvia hierosolymitana")
     }
     fun postaviMedicinskiMod(){
         medicinskaListAdapter = MedicinskaListAdapter(listOf())
@@ -146,5 +155,29 @@ class MainActivity : AppCompatActivity() {
     private fun showNovaBiljka() {
         val intent = Intent(this, NovaBiljkaActivity::class.java)
         startActivityLauncher.launch(intent)
+    }
+
+    fun getUpcoming( ){
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        // Create a new coroutine on the UI thread
+        scope.launch{
+            // Opcija 1
+            val result = TrefleRepository.getAllPlants()
+            // Display result of the network request to the user
+            Log.e("moje",result.toString())
+            when (result) {
+                is GetTrefleResponse -> onSuccess(result.biljke)
+                else-> onError()
+            }
+        }
+    }
+    fun onSuccess(biljke:List<BiljkaPomocna>){
+        val toast = Toast.makeText(this, "Upcoming movies found", Toast.LENGTH_SHORT)
+        toast.show()
+        //recentMoviesAdapter.updateMovies(movies)
+    }
+    fun onError() {
+        val toast = Toast.makeText(this, "Search error", Toast.LENGTH_SHORT)
+        toast.show()
     }
 }

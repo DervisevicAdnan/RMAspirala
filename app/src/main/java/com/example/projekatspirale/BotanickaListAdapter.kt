@@ -28,6 +28,11 @@ class BotanickaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Ada
         holder: BotanickaListAdapter.BotanickiViewHolder,
         position: Int
     ) {
+        holder.nazivBiljke.text = ""
+        holder.porodicaBiljke.text = ""
+        holder.klimatskiTipBiljke.text = ""
+        holder.zemljisniTipBiljke.text = ""
+
         holder.nazivBiljke.text = biljke[position].naziv
         holder.porodicaBiljke.text = biljke[position].porodica
         holder.klimatskiTipBiljke.text = biljke[position].klimatskiTipovi[0].opis

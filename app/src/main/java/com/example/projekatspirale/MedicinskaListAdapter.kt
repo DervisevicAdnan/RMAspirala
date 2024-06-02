@@ -1,18 +1,25 @@
 package com.example.projekatspirale
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class MedicinskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Adapter<MedicinskaListAdapter.MedicinskiViewHolder> (){
+    lateinit var trefleDAO: TrefleDAO
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): MedicinskaListAdapter.MedicinskiViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.medical_view,parent,false)
+        trefleDAO = TrefleDAO(parent.context)
         view.setOnClickListener {
             ostaviMedicinskiSlicne(view)
         }
@@ -27,10 +34,21 @@ class MedicinskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Ad
         holder: MedicinskaListAdapter.MedicinskiViewHolder,
         position: Int
     ) {
+        holder.nazivBiljke.text = ""
+        holder.upozorenjeBiljke.text = ""
+        for(i in holder.koristiBiljke.indices){
+            holder.koristiBiljke[i].text = ""
+        }
+
         holder.nazivBiljke.text = biljke[position].naziv
         holder.upozorenjeBiljke.text = biljke[position].medicinskoUpozorenje
         for(i in biljke[position].medicinskeKoristi.indices){
             holder.koristiBiljke[i].text = biljke[position].medicinskeKoristi[i].opis
+        }
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        // Create a new coroutine on the UI thread
+        scope.launch {
+            holder.slikaBiljke.setImageBitmap(trefleDAO.getImage(biljke[position]))
         }
     }
 
