@@ -6,13 +6,19 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class KuharskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Adapter<KuharskaListAdapter.KuharskaViewHolder> (){
+    lateinit var trefleDAO: TrefleDAO
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): KuharskaListAdapter.KuharskaViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.cooking_view,parent,false)
+        trefleDAO = TrefleDAO(parent.context)
         view.setOnClickListener {
             ostaviKuharskiSlicne(view)
         }
@@ -34,6 +40,8 @@ class KuharskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Adap
         for(i in holder.jelaBiljke.indices){
             holder.jelaBiljke[i].text = ""
         }
+        holder.slikaBiljke.setImageResource(R.drawable.ic_launcher_foreground)
+
 
         holder.nazivBiljke.text = biljke[position].naziv
         if(biljke[position].profilOkusa != null) {
@@ -41,6 +49,11 @@ class KuharskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Adap
         }
         for(i in biljke[position].jela.indices){
             holder.jelaBiljke[i].text = biljke[position].jela[i]
+        }
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        // Create a new coroutine on the UI thread
+        scope.launch {
+            holder.slikaBiljke.setImageBitmap(trefleDAO.getImage(biljke[position]))
         }
     }
 

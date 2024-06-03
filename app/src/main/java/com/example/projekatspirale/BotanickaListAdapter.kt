@@ -6,15 +6,23 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-class BotanickaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Adapter<BotanickaListAdapter.BotanickiViewHolder> (){
+class BotanickaListAdapter(private var biljke : List<Biljka>, private var filterable: Boolean) : RecyclerView.Adapter<BotanickaListAdapter.BotanickiViewHolder> (){
+    lateinit var trefleDAO: TrefleDAO
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): BotanickaListAdapter.BotanickiViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.botanical_view,parent,false)
-        view.setOnClickListener {
-            ostaviBotanickiSlicne(view)
+        trefleDAO = TrefleDAO(parent.context)
+        if(filterable) {
+            view.setOnClickListener {
+                ostaviBotanickiSlicne(view)
+            }
         }
         return BotanickiViewHolder(view)
     }
@@ -32,11 +40,19 @@ class BotanickaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Ada
         holder.porodicaBiljke.text = ""
         holder.klimatskiTipBiljke.text = ""
         holder.zemljisniTipBiljke.text = ""
+        holder.slikaBiljke.setImageResource(R.drawable.ic_launcher_foreground)
 
         holder.nazivBiljke.text = biljke[position].naziv
         holder.porodicaBiljke.text = biljke[position].porodica
-        holder.klimatskiTipBiljke.text = biljke[position].klimatskiTipovi[0].opis
-        holder.zemljisniTipBiljke.text = biljke[position].zemljisniTipovi[0].naziv
+        if(biljke[position].klimatskiTipovi.isNotEmpty())
+            holder.klimatskiTipBiljke.text = biljke[position].klimatskiTipovi[0].opis
+        if(biljke[position].zemljisniTipovi.isNotEmpty())
+            holder.zemljisniTipBiljke.text = biljke[position].zemljisniTipovi[0].naziv
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        // Create a new coroutine on the UI thread
+        scope.launch {
+            holder.slikaBiljke.setImageBitmap(trefleDAO.getImage(biljke[position]))
+        }
     }
 
     fun updateBiljke(biljke: List<Biljka>){

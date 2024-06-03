@@ -15,10 +15,10 @@ interface Api {
         @Query("filter[scientific_name]") latinskiNaziv: String,
         @Query("token") apiKey: String = BuildConfig.API_TOKEN
     ): Response<GetTrefleResponse>
-    @GET("plants/")
+    @GET("plants/search")
     suspend fun getPlantsPoFlowerColor(
         @Query("filter[flower_color]") flowerColor: String,
-        @Query("filter[scientific_name]") substr: String,
+        @Query("q") substr: String,
         @Query("token") apiKey: String = BuildConfig.API_TOKEN
     ): Response<GetTrefleResponse>
     @GET("plants/{id}")

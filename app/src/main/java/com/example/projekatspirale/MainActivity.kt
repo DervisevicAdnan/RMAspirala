@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -26,6 +27,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var spinnerAdapter : ArrayAdapter<String>
     private lateinit var resetBtn: Button
     private lateinit var novaBiljkaBtn: Button
+    private lateinit var pretragaET: EditText
+    private lateinit var bojaSPIN: Spinner
+    private lateinit var brzaPretraga: Button
+    private var boje = listOf("red", "blue", "yellow", "orange", "purple","brown","green")
+    private lateinit var bojeAdapter: ArrayAdapter<String>
+    private var pretraga = false
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var medicinskaListAdapter: MedicinskaListAdapter
@@ -82,12 +89,24 @@ class MainActivity : AppCompatActivity() {
             showNovaBiljka()
         }
 
+        pretragaET = findViewById(R.id.pretragaET)
+
+        bojaSPIN = findViewById(R.id.bojaSPIN)
+        bojeAdapter = ArrayAdapter<String>(this,
+            com.google.android.material.R.layout.support_simple_spinner_dropdown_item,boje)
+        bojaSPIN.adapter = bojeAdapter
+
+        brzaPretraga = findViewById(R.id.brzaPretraga)
+        brzaPretraga.setOnClickListener {
+            trazi()
+        }
+
         //getUpcoming()
         //TrefleDAO.searchPoLatNazivu("Salvia hierosolymitana")
     }
     fun postaviMedicinskiMod(){
         medicinskaListAdapter = MedicinskaListAdapter(listOf())
-        if(trenutniAdapter == 2) {
+        if(trenutniAdapter == 2 && !pretraga) {
             medicinskaListAdapter.updateBiljke(botanickaListAdapter.getBiljkeAdaptera())
         }
         else if(trenutniAdapter == 3){
@@ -99,10 +118,14 @@ class MainActivity : AppCompatActivity() {
         trenutniAdapter = 1
         recyclerView.adapter = medicinskaListAdapter
 
+        bojaSPIN.visibility = View.GONE
+        pretragaET.visibility = View.GONE
+        brzaPretraga.visibility = View.GONE
+
     }
 
     fun postaviBotanickiMod(){
-        botanickaListAdapter = BotanickaListAdapter(listOf())
+        botanickaListAdapter = BotanickaListAdapter(listOf(),true)
         if(trenutniAdapter == 1) {
             botanickaListAdapter.updateBiljke(medicinskaListAdapter.getBiljkeAdaptera())
         }
@@ -115,11 +138,15 @@ class MainActivity : AppCompatActivity() {
         trenutniAdapter = 2
         recyclerView.adapter = botanickaListAdapter
 
+        bojaSPIN.visibility = View.VISIBLE
+        pretragaET.visibility = View.VISIBLE
+        brzaPretraga.visibility = View.VISIBLE
+
     }
 
     fun postaviKuharskiMod(){
         kuharskaListAdapter = KuharskaListAdapter(listOf())
-        if(trenutniAdapter == 2) {
+        if(trenutniAdapter == 2 && !pretraga) {
             kuharskaListAdapter.updateBiljke(botanickaListAdapter.getBiljkeAdaptera())
         }
         else if(trenutniAdapter == 1){
@@ -130,6 +157,10 @@ class MainActivity : AppCompatActivity() {
         }
         trenutniAdapter = 3
         recyclerView.adapter = kuharskaListAdapter
+
+        bojaSPIN.visibility = View.GONE
+        pretragaET.visibility = View.GONE
+        brzaPretraga.visibility = View.GONE
     }
 
     fun odaberiMod(mod: String){
@@ -152,32 +183,23 @@ class MainActivity : AppCompatActivity() {
             kuharskaListAdapter.updateBiljke(biljke)
         }
     }
+    private fun trazi(){
+        if(pretragaET.text.isNotEmpty()){
+            botanickaListAdapter = BotanickaListAdapter(listOf(),false)
+            var trefleDAO = TrefleDAO(this)
+            val scope = CoroutineScope(Job() + Dispatchers.Main)
+            pretraga = true
+            // Create a new coroutine on the UI thread
+            scope.launch {
+                botanickaListAdapter.updateBiljke(trefleDAO.getPlantsWithFlowerColor(bojaSPIN.selectedItem.toString(),pretragaET.text.toString()))
+                recyclerView.adapter = botanickaListAdapter
+            }
+
+
+        }
+    }
     private fun showNovaBiljka() {
         val intent = Intent(this, NovaBiljkaActivity::class.java)
         startActivityLauncher.launch(intent)
-    }
-
-    fun getUpcoming( ){
-        val scope = CoroutineScope(Job() + Dispatchers.Main)
-        // Create a new coroutine on the UI thread
-        scope.launch{
-            // Opcija 1
-            val result = TrefleRepository.getAllPlants()
-            // Display result of the network request to the user
-            Log.e("moje",result.toString())
-            when (result) {
-                is GetTrefleResponse -> onSuccess(result.biljke)
-                else-> onError()
-            }
-        }
-    }
-    fun onSuccess(biljke:List<BiljkaPomocna>){
-        val toast = Toast.makeText(this, "Upcoming movies found", Toast.LENGTH_SHORT)
-        toast.show()
-        //recentMoviesAdapter.updateMovies(movies)
-    }
-    fun onError() {
-        val toast = Toast.makeText(this, "Search error", Toast.LENGTH_SHORT)
-        toast.show()
     }
 }

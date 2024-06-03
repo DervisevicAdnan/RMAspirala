@@ -39,6 +39,8 @@ class MedicinskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Ad
         for(i in holder.koristiBiljke.indices){
             holder.koristiBiljke[i].text = ""
         }
+        holder.slikaBiljke.setImageResource(R.drawable.ic_launcher_foreground)
+
 
         holder.nazivBiljke.text = biljke[position].naziv
         holder.upozorenjeBiljke.text = biljke[position].medicinskoUpozorenje

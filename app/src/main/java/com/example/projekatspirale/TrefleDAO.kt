@@ -185,6 +185,7 @@ class TrefleDAO(private val context: Context) {
                 val detaljno = getPlantPoId(biljka.id)
                 if (detaljno != null) {
                     val biljcica = BiljkaFromPomocnaDetaljno(detaljno)
+                    //Log.e("bleaj",biljcica.toString())
                     if(biljcica != null){
                         lista.add(biljcica)
                     }
@@ -201,7 +202,7 @@ class TrefleDAO(private val context: Context) {
         var porodica : String = ""
         var medicinskoUpozorenje : String = ""
         var medicinskeKoristi : List<MedicinskaKorist> = emptyList()
-        var profilOkusa : ProfilOkusaBiljke? = null
+        var profilOkusa : ProfilOkusaBiljke? = ProfilOkusaBiljke.BEZUKUSNO
         var jela : List<String> = emptyList()
         var klimatskiTipovi : List<KlimatskiTip> = emptyList()
         var zemljisniTipovi : List<Zemljiste> = emptyList()
@@ -269,7 +270,8 @@ class TrefleDAO(private val context: Context) {
                 klimatskiTipovi = pomKlime
             }
 
-            naziv = detaljno.commonName
+            if(detaljno.commonName != null) naziv = detaljno.commonName
+            if(detaljno.scientificName != null) naziv += " ("+detaljno.scientificName+")"
             return Biljka(naziv, porodica, medicinskoUpozorenje, medicinskeKoristi, profilOkusa, jela, klimatskiTipovi, zemljisniTipovi)
 
         }

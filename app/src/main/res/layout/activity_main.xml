@@ -29,9 +29,9 @@
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/novaBiljkaBtn"
+        app:layout_constraintTop_toBottomOf="@id/pretragaET"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="7dp"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="40dp" />
 
@@ -54,8 +54,49 @@
         android:text="Dodaj novu biljku"
         app:layout_constraintTop_toBottomOf="@id/modSpinner"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/brzaPretraga"
         android:layout_marginTop="15dp"
         tools:layout_editor_absoluteX="107dp"
         tools:layout_editor_absoluteY="-24dp" />
+
+    <EditText
+        android:id="@+id/pretragaET"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text"
+        android:hint="Pretraga"
+        tools:layout_editor_absoluteX="88dp"
+        tools:layout_editor_absoluteY="138dp"
+        android:layout_marginTop="7dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/novaBiljkaBtn"
+        app:layout_constraintBottom_toTopOf="@id/biljkeRV"
+        android:visibility="gone"/>
+
+    <Spinner
+        android:id="@+id/bojaSPIN"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        tools:layout_editor_absoluteX="66dp"
+        tools:layout_editor_absoluteY="171dp"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintStart_toEndOf="@id/pretragaET"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/pretragaET"
+        app:layout_constraintBottom_toBottomOf="@id/pretragaET"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/brzaPretraga"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Brza pretraga"
+        tools:layout_editor_absoluteX="233dp"
+        tools:layout_editor_absoluteY="99dp"
+        app:layout_constraintStart_toEndOf="@id/novaBiljkaBtn"
+        app:layout_constraintTop_toTopOf="@id/novaBiljkaBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

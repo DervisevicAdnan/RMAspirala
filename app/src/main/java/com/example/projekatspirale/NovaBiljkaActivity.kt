@@ -17,6 +17,10 @@ import android.widget.ListView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class NovaBiljkaActivity : AppCompatActivity() {
     private lateinit var nazivET : EditText
@@ -135,9 +139,22 @@ class NovaBiljkaActivity : AppCompatActivity() {
     private fun dodajBiljku(){
         var imaGresaka = false
         var imaBtnGreska = false
-        if(nazivET.text.toString().length < 2 || nazivET.text.toString().length > 20){
-            nazivET.setError("Dužina naziva biljke mora biti između 2 i 20 karaktera")
+        if(nazivET.text.toString().length < 2 || nazivET.text.toString().length > 40){
+            nazivET.setError("Dužina naziva biljke mora biti između 2 i 40 karaktera")
             imaGresaka = true
+        }
+        var otvorenaZagrada = -1
+        var zatvorenaZagrada = -1
+        var pomNaziv = nazivET.text.toString()
+        for(i in pomNaziv.indices){
+            if(pomNaziv[i] == '(') otvorenaZagrada = i
+            if(pomNaziv[i] == ')') {
+                zatvorenaZagrada = i
+                break
+            }
+        }
+        if(otvorenaZagrada < 0 || zatvorenaZagrada < 0 || zatvorenaZagrada-otvorenaZagrada<2){
+            if(nazivET.error != null) nazivET.setError(nazivET.error.toString()+"\nNaziv mora biti u formatu: naziv (latinski naziv)")
         }
         if(porodicaET.text.toString().length < 2 || porodicaET.text.toString().length > 20){
             porodicaET.setError("Dužina naziva porodice mora biti između 2 i 20 karaktera")
@@ -206,11 +223,17 @@ class NovaBiljkaActivity : AppCompatActivity() {
             listKlimatskiTip,
             listZemljiste
             )
-        dodajBiljkuUListu(novaBiljka)
-        //val intent = Intent(this, MainActivity::class.java).apply {}
-        //startActivity(intent)
-        setResult(Activity.RESULT_OK)
-        finish()
+
+        var trefleDAO = TrefleDAO(this)
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        // Create a new coroutine on the UI thread
+        scope.launch {
+            dodajBiljkuUListu(trefleDAO.fixData(novaBiljka))
+            //val intent = Intent(this, MainActivity::class.java).apply {}
+            //startActivity(intent)
+            setResult(Activity.RESULT_OK)
+            finish()
+        }
     }
 
     private fun dodajJelo(){

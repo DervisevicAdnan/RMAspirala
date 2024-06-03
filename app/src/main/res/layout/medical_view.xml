@@ -10,6 +10,7 @@
         android:id="@+id/slikaItem"
         android:layout_width="110dp"
         android:layout_height="120dp"
+        android:scaleType="centerCrop"
         android:layout_marginRight="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
