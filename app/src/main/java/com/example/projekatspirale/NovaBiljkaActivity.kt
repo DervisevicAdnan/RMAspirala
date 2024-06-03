@@ -155,6 +155,8 @@ class NovaBiljkaActivity : AppCompatActivity() {
         }
         if(otvorenaZagrada < 0 || zatvorenaZagrada < 0 || zatvorenaZagrada-otvorenaZagrada<2){
             if(nazivET.error != null) nazivET.setError(nazivET.error.toString()+"\nNaziv mora biti u formatu: naziv (latinski naziv)")
+            else nazivET.setError("Naziv mora biti u formatu: naziv (latinski naziv)")
+            imaGresaka = true
         }
         if(porodicaET.text.toString().length < 2 || porodicaET.text.toString().length > 20){
             porodicaET.setError("Dužina naziva porodice mora biti između 2 i 20 karaktera")
