@@ -18,7 +18,8 @@ class KuharskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Adap
         viewType: Int
     ): KuharskaListAdapter.KuharskaViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.cooking_view,parent,false)
-        trefleDAO = TrefleDAO(parent.context)
+        trefleDAO = TrefleDAO()
+        trefleDAO.setContext(parent.context)
         view.setOnClickListener {
             ostaviKuharskiSlicne(view)
         }

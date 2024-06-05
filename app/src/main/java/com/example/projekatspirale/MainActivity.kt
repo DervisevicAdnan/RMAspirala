@@ -186,7 +186,7 @@ class MainActivity : AppCompatActivity() {
     private fun trazi(){
         if(pretragaET.text.isNotEmpty()){
             botanickaListAdapter = BotanickaListAdapter(listOf(),false)
-            var trefleDAO = TrefleDAO(this)
+            var trefleDAO = TrefleDAO()
             val scope = CoroutineScope(Job() + Dispatchers.Main)
             pretraga = true
             // Create a new coroutine on the UI thread

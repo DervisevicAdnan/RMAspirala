@@ -19,7 +19,8 @@ class MedicinskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Ad
         viewType: Int
     ): MedicinskaListAdapter.MedicinskiViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.medical_view,parent,false)
-        trefleDAO = TrefleDAO(parent.context)
+        trefleDAO = TrefleDAO()
+        trefleDAO.setContext(parent.context)
         view.setOnClickListener {
             ostaviMedicinskiSlicne(view)
         }

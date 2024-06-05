@@ -18,7 +18,8 @@ class BotanickaListAdapter(private var biljke : List<Biljka>, private var filter
         viewType: Int
     ): BotanickaListAdapter.BotanickiViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.botanical_view,parent,false)
-        trefleDAO = TrefleDAO(parent.context)
+        trefleDAO = TrefleDAO()
+        trefleDAO.setContext(parent.context)
         if(filterable) {
             view.setOnClickListener {
                 ostaviBotanickiSlicne(view)

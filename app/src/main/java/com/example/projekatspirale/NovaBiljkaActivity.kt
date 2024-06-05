@@ -226,7 +226,7 @@ class NovaBiljkaActivity : AppCompatActivity() {
             listZemljiste
             )
 
-        var trefleDAO = TrefleDAO(this)
+        var trefleDAO = TrefleDAO()
         val scope = CoroutineScope(Job() + Dispatchers.Main)
         // Create a new coroutine on the UI thread
         scope.launch {

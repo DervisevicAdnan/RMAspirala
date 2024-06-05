@@ -3,6 +3,7 @@ package com.example.projekatspirale
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -14,9 +15,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class TrefleDAO(private val context: Context) {
-    val drawable = ContextCompat.getDrawable(context, R.drawable.test)
-    val defaultBitmap = (drawable as BitmapDrawable).bitmap
+class TrefleDAO() {
+    private lateinit var context: Context
+    private var drawable : Drawable? = null
+    private var defaultBitmap :Bitmap? = null
+
+    fun setContext(cont:Context){
+        context = cont
+        drawable = ContextCompat.getDrawable(context, R.drawable.test)
+        defaultBitmap = (drawable as BitmapDrawable).bitmap
+    }
 
     private suspend fun searchPoLatNazivu(latinskiNaziv: String): Int? {
         return try {
@@ -63,12 +71,12 @@ class TrefleDAO(private val context: Context) {
                             .get()
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        defaultBitmap
+                        defaultBitmap!!
                     }
                 }
             }
         }
-        return defaultBitmap
+        return defaultBitmap!!
     }
 
     suspend fun fixData(biljka: Biljka) : Biljka{
