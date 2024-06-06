@@ -191,8 +191,11 @@ class TrefleDAO() {
         if(result != null){
             for(biljka in result.biljke) {
                 val detaljno = getPlantPoId(biljka.id)
+                var nazivos = ""
+                if (biljka.commonName != null) nazivos = biljka.commonName
+                nazivos += " (" + biljka.scientificName + ")"
                 if (detaljno != null) {
-                    val biljcica = BiljkaFromPomocnaDetaljno(detaljno)
+                    val biljcica = BiljkaFromPomocnaDetaljno(detaljno, nazivos)
                     //Log.e("bleaj",biljcica.toString())
                     if(biljcica != null){
                         lista.add(biljcica)
@@ -205,7 +208,7 @@ class TrefleDAO() {
     }
 
 
-    private fun BiljkaFromPomocnaDetaljno(detaljno: BiljkaPomocnaDetaljno) : Biljka?{
+    private fun BiljkaFromPomocnaDetaljno(detaljno: BiljkaPomocnaDetaljno, origNaziv: String) : Biljka?{
         var naziv : String = ""
         var porodica : String = ""
         var medicinskoUpozorenje : String = ""
@@ -278,8 +281,9 @@ class TrefleDAO() {
                 klimatskiTipovi = pomKlime
             }
 
-            if(detaljno.commonName != null) naziv = detaljno.commonName
-            if(detaljno.scientificName != null) naziv += " ("+detaljno.scientificName+")"
+            //if(detaljno.commonName != null) naziv = detaljno.commonName
+            //if(detaljno.scientificName != null) naziv += " ("+detaljno.scientificName+")"
+            naziv = origNaziv
             return Biljka(naziv, porodica, medicinskoUpozorenje, medicinskeKoristi, profilOkusa, jela, klimatskiTipovi, zemljisniTipovi)
 
         }
