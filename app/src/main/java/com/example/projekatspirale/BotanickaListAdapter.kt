@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BotanickaListAdapter(private var biljke : List<Biljka>, private var filterable: Boolean) : RecyclerView.Adapter<BotanickaListAdapter.BotanickiViewHolder> (){
     lateinit var trefleDAO: TrefleDAO
@@ -50,9 +51,12 @@ class BotanickaListAdapter(private var biljke : List<Biljka>, private var filter
         if(biljke[position].zemljisniTipovi.isNotEmpty())
             holder.zemljisniTipBiljke.text = biljke[position].zemljisniTipovi[0].naziv
         val scope = CoroutineScope(Job() + Dispatchers.Main)
-        // Create a new coroutine on the UI thread
+// Create a new coroutine on the UI thread
         scope.launch {
-            holder.slikaBiljke.setImageBitmap(trefleDAO.getImage(biljke[position]))
+            val bitmap = withContext(Dispatchers.IO) {
+                trefleDAO.getImage(biljke[position])
+            }
+            holder.slikaBiljke.setImageBitmap(bitmap)
         }
     }
 

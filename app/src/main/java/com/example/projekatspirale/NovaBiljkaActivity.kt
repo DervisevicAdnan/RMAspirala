@@ -216,6 +216,7 @@ class NovaBiljkaActivity : AppCompatActivity() {
         Log.e("moje",zemljisniTipLV.checkedItemIds.toList().toString())
 
         var novaBiljka = Biljka(
+            null,
             nazivET.text.toString(),
             porodicaET.text.toString(),
             medicinskoUpozorenjeET.text.toString(),
@@ -227,10 +228,13 @@ class NovaBiljkaActivity : AppCompatActivity() {
             )
 
         var trefleDAO = TrefleDAO()
+        var biljkaDatabase = BiljkaDatabase.getInstance(this)
+
         val scope = CoroutineScope(Job() + Dispatchers.Main)
         // Create a new coroutine on the UI thread
         scope.launch {
-            dodajBiljkuUListu(trefleDAO.fixData(novaBiljka))
+            //dodajBiljkuUListu(trefleDAO.fixData(novaBiljka))
+            biljkaDatabase.biljkaDao().saveBiljka(trefleDAO.fixData(novaBiljka))
             //val intent = Intent(this, MainActivity::class.java).apply {}
             //startActivity(intent)
             setResult(Activity.RESULT_OK)

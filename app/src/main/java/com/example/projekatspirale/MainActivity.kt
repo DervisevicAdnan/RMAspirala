@@ -40,8 +40,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var kuharskaListAdapter: KuharskaListAdapter
 
     private var trenutniAdapter: Int = 0
-
-    private var biljke = getListuBiljaka()
+    private lateinit var biljkaDatabase: BiljkaDatabase
+    //private var biljke = getListuBiljaka()
+    private var biljke: List<Biljka>? = null
 
     val startActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -57,6 +58,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        biljkaDatabase = BiljkaDatabase.getInstance(this)
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            biljke = biljkaDatabase.biljkaDao().getAllBiljkas()
+        }
 
         resetBtn = findViewById(R.id.resetBtn)
         resetBtn.setOnClickListener {
@@ -113,7 +120,12 @@ class MainActivity : AppCompatActivity() {
             medicinskaListAdapter.updateBiljke(kuharskaListAdapter.getBiljkeAdaptera())
         }
         else{
-            medicinskaListAdapter.updateBiljke(biljke)
+            val scope = CoroutineScope(Job() + Dispatchers.Main)
+            scope.launch {
+                biljke = biljkaDatabase.biljkaDao().getAllBiljkas()
+                medicinskaListAdapter.updateBiljke(biljke!!)
+            }
+
         }
         trenutniAdapter = 1
         recyclerView.adapter = medicinskaListAdapter
@@ -133,7 +145,12 @@ class MainActivity : AppCompatActivity() {
             botanickaListAdapter.updateBiljke(kuharskaListAdapter.getBiljkeAdaptera())
         }
         else{
-            botanickaListAdapter.updateBiljke(biljke)
+            val scope = CoroutineScope(Job() + Dispatchers.Main)
+            scope.launch {
+                biljke = biljkaDatabase.biljkaDao().getAllBiljkas()
+                botanickaListAdapter.updateBiljke(biljke!!)
+            }
+
         }
         trenutniAdapter = 2
         recyclerView.adapter = botanickaListAdapter
@@ -153,7 +170,12 @@ class MainActivity : AppCompatActivity() {
             kuharskaListAdapter.updateBiljke(medicinskaListAdapter.getBiljkeAdaptera())
         }
         else{
-            kuharskaListAdapter.updateBiljke(biljke)
+            val scope = CoroutineScope(Job() + Dispatchers.Main)
+            scope.launch {
+                biljke = biljkaDatabase.biljkaDao().getAllBiljkas()
+                kuharskaListAdapter.updateBiljke(biljke!!)
+            }
+
         }
         trenutniAdapter = 3
         recyclerView.adapter = kuharskaListAdapter
@@ -173,15 +195,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
     fun resetujBiljke(){
-        if(trenutniAdapter == 1){
-            medicinskaListAdapter.updateBiljke(biljke)
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            biljke = biljkaDatabase.biljkaDao().getAllBiljkas()
+            if(trenutniAdapter == 1){
+                medicinskaListAdapter.updateBiljke(biljke!!)
+            }
+            else if(trenutniAdapter == 2){
+                botanickaListAdapter.updateBiljke(biljke!!)
+            }
+            else if(trenutniAdapter==3){
+                kuharskaListAdapter.updateBiljke(biljke!!)
+            }
         }
-        else if(trenutniAdapter == 2){
-            botanickaListAdapter.updateBiljke(biljke)
-        }
-        else if(trenutniAdapter==3){
-            kuharskaListAdapter.updateBiljke(biljke)
-        }
+
     }
     private fun trazi(){
         if(pretragaET.text.isNotEmpty()){

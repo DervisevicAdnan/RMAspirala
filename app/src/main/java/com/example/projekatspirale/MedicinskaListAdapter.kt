@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MedicinskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Adapter<MedicinskaListAdapter.MedicinskiViewHolder> (){
     lateinit var trefleDAO: TrefleDAO
@@ -49,9 +50,12 @@ class MedicinskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Ad
             holder.koristiBiljke[i].text = biljke[position].medicinskeKoristi[i].opis
         }
         val scope = CoroutineScope(Job() + Dispatchers.Main)
-        // Create a new coroutine on the UI thread
+// Create a new coroutine on the UI thread
         scope.launch {
-            holder.slikaBiljke.setImageBitmap(trefleDAO.getImage(biljke[position]))
+            val bitmap = withContext(Dispatchers.IO) {
+                trefleDAO.getImage(biljke[position])
+            }
+            holder.slikaBiljke.setImageBitmap(bitmap)
         }
     }
 

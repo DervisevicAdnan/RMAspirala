@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class KuharskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Adapter<KuharskaListAdapter.KuharskaViewHolder> (){
     lateinit var trefleDAO: TrefleDAO
@@ -52,9 +53,12 @@ class KuharskaListAdapter(private var biljke : List<Biljka>) : RecyclerView.Adap
             holder.jelaBiljke[i].text = biljke[position].jela[i]
         }
         val scope = CoroutineScope(Job() + Dispatchers.Main)
-        // Create a new coroutine on the UI thread
+// Create a new coroutine on the UI thread
         scope.launch {
-            holder.slikaBiljke.setImageBitmap(trefleDAO.getImage(biljke[position]))
+            val bitmap = withContext(Dispatchers.IO) {
+                trefleDAO.getImage(biljke[position])
+            }
+            holder.slikaBiljke.setImageBitmap(bitmap)
         }
     }
 

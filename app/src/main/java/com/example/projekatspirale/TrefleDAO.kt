@@ -57,12 +57,23 @@ class TrefleDAO() {
     }
 
     suspend fun getImage(biljka: Biljka): Bitmap {
+        var biljkaDatabase = BiljkaDatabase.getInstance(context)
+        if(biljka.id!=null){
+            try{
+                var biljkaBitmap = biljkaDatabase.biljkaDao().getBitmapByBiljkaId(biljka.id!!)
+                if (biljkaBitmap.isNotEmpty()){
+                    return biljkaBitmap.first().bitmap
+                }
+            }catch (ex: Exception){
+
+            }
+        }
         val latinskiNaziv:String = getLatinski(biljka.naziv)
         val id = searchPoLatNazivu(latinskiNaziv)
         if(id != null){
             val detaljno = getPlantPoId(id)
             if(detaljno != null){
-                return withContext(Dispatchers.IO) {
+                var bb = withContext(Dispatchers.IO) {
                     try {
                         Glide.with(context)
                             .asBitmap()
@@ -74,6 +85,14 @@ class TrefleDAO() {
                         defaultBitmap!!
                     }
                 }
+                if(biljka.id!=null) {
+                    try {
+                        biljkaDatabase.biljkaDao().addImage(biljka.id!!, bb)
+                    } catch (ex: Exception) {
+
+                    }
+                }
+                return bb
             }
         }
         return defaultBitmap!!
@@ -178,7 +197,7 @@ class TrefleDAO() {
                 medicinskeKoristi = biljka.medicinskeKoristi
                 profilOkusa = biljka.profilOkusa
 
-                return Biljka(naziv, porodica, medicinskoUpozorenje, medicinskeKoristi, profilOkusa, jela, klimatskiTipovi, zemljisniTipovi)
+                return Biljka(null,naziv, porodica, medicinskoUpozorenje, medicinskeKoristi, profilOkusa, jela, klimatskiTipovi, zemljisniTipovi)
 
             }
         }
@@ -284,7 +303,7 @@ class TrefleDAO() {
             //if(detaljno.commonName != null) naziv = detaljno.commonName
             //if(detaljno.scientificName != null) naziv += " ("+detaljno.scientificName+")"
             naziv = origNaziv
-            return Biljka(naziv, porodica, medicinskoUpozorenje, medicinskeKoristi, profilOkusa, jela, klimatskiTipovi, zemljisniTipovi)
+            return Biljka(null,naziv, porodica, medicinskoUpozorenje, medicinskeKoristi, profilOkusa, jela, klimatskiTipovi, zemljisniTipovi)
 
         }
 
